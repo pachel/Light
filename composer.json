@@ -1,0 +1,26 @@
+{
+  "name": "pachel/light",
+  "description": "Light Framework",
+  "type": "library",
+  "autoload-dev": {
+    "classmap": [
+      "example/"
+    ]
+  },
+  "autoload": {
+    "classmap": ["src/","lib/"]
+  },
+  "authors": [
+    {
+      "name": "Laszlo Toth",
+      "email": "pachel82@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=8.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  }
+}
