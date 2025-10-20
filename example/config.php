@@ -1,7 +1,6 @@
 <?php
-define("LFW_URL","");
-define("LFW_UI","");
-define("LFW_LOGDIR","");
+define("LFW_URL","http://localhost/light");
+define("LFW_UI",__DIR__."/ui");
 
 /*
 return [

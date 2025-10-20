@@ -2,15 +2,24 @@
 
 namespace Pachel\Light\src;
 
-class Light
+use Pachel\Light\src\Parents\Prefab;
+
+class Light extends Prefab
 {
     /**
      * @var Config $_config
      */
-    private $_config;
+    public static $Config;
+    /**
+     * @var Routing $Routing
+     */
+
+    public static $Routing;
 
     public function __construct($config = null)
     {
-        $this->_config = new Config($config);
+        self::$Config = new Config($config);
+        self::$Routing = new Routing();
     }
+
 }
