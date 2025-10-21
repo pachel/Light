@@ -1,5 +1,5 @@
 <?php
-define("LFW_URL","http://localhost/light");
+define("LFW_URL","http://localhost/light/example/");
 define("LFW_UI",__DIR__."/ui");
 
 /*

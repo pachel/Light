@@ -8,7 +8,8 @@ class Errors
 {
     public static $_MESSAGE = [
         1001 => "Nincs meg a minimál config! ",
-        1002 => "A mappa nem létezik, vagy nem mappa: %s! "
+        1002 => "A mappa nem létezik, vagy nem mappa: %s! ",
+        2001 => "Nem található a path a listában"
     ];
 
     /**

@@ -19,7 +19,11 @@ class Light extends Prefab
     public function __construct($config = null)
     {
         self::$Config = new Config($config);
+
         self::$Routing = new Routing();
     }
-
+    public function run()
+    {
+        self::$Routing->searchRoutes();
+    }
 }

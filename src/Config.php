@@ -42,6 +42,7 @@ class Config
     protected function checkConfig(&$config)
     {
         $this->saveParams($config);
+
         if (!$this->hasMinimal($config)) {
             throw new \Exception(Errors::$_MESSAGE[1001], 1001);
         }
@@ -49,19 +50,19 @@ class Config
 
     protected function hasMinimal(&$config)
     {
-
         foreach (self::_MINIMAL as $item) {
             if ($this->get($item) == null) {
                 return false;
             }
-            $this->set($item,$this->checkSlash($this->get($item)));
         }
+
         return true;
     }
 
     protected function dirExists($name)
     {
         $value = $this->get($name);
+
         if (in_array(strtoupper($name), self::_DIRS)) {
             if (!is_dir($value)) {
                 throw new \Exception(Errors::getMessage(1002, $value), 1002);
