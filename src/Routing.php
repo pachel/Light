@@ -6,6 +6,7 @@ use http\Message;
 use Pachel\libs\Errors;
 use Pachel\Light\src\Models\Route;
 use Pachel\Light\src\Parents\CallBack;
+use Pachel\Light\src\Traits\CallProtected;
 
 class Routing
 {
@@ -14,6 +15,10 @@ class Routing
      * @var Route[] $_routes
      */
     private $_routes = [];
+    /**
+     * Ide betesszük a protected methódus meghívót, hogy kívülről működjön
+     */
+    use CallProtected;
 
     public function __construct()
     {
@@ -37,52 +42,110 @@ class Routing
         return new addCallback($this);
     }
 
-    private function getTextToRegex($path,&$variables = null)
+    /**
+     * Ez a függvény lényegében átalakítja a Routhoz tartozó path értékét, hogy illeszkedjen
+     * az url-re a regex keresésnél. Itt bekerült a {} és a * is.
+     * A {} egy bármi, amit majd a kontroller megkap paraméterként
+     * @param $path
+     * @param $variables
+     * @return array|string|string[]
+     */
+    private function getTextToRegex($path, &$variables = null)
     {
-        if(preg_match_all("/\{([^\}]+)\}/",$path,$preg)){
+        $csillag = ["______", ".+?"];
+        $path = str_replace("*", $csillag[0], $path);
+        if (preg_match_all("/\{([^\}]+)\}/", $path, $preg)) {
             $search = [];
             $replace = [];
-            foreach ($preg[1] AS $value){
+            foreach ($preg[1] as $value) {
                 $variables[] = $value;
-                $search[] = "{".$value."}";
-                $replace[] = "__".$value."__";
+                $search[] = "{" . $value . "}";
+                $replace[] = "__" . $value . "__";
                 $replace2[] = "(.+?)";
 
             }
-            $path = str_replace($search,$replace,$path);
-            $path = preg_quote($path,"/");
-            return str_replace($replace,$replace2,$path);
+            $path = str_replace($search, $replace, $path);
+            $path = preg_quote($path, "/");
+            $replace[] = $csillag[0];
+            $replace2[] = $csillag[1];
+            return str_replace($replace, $replace2, $path);
 
         }
-        return preg_quote($path, "/");
+        return str_replace($csillag[0], $csillag[1], preg_quote($path, "/"));
     }
 
+    /**
+     * Visszaadja az URL-t, amiben már nincs benne a felesleges sallang
+     * @return actualRoute
+     * @throws \Exception
+     */
     public function getActualRoute()
     {
+
         //TODO: ide majd be kell tenni a cli-t
-        $alap = dirname($_SERVER["SCRIPT_NAME"]);
-        if(!preg_match("/".$this->getTextToRegex($alap)."(.*)/",$_SERVER["REQUEST_URI"],$preg)){
-            throw new \Exception(Errors::getMessage(2001),2001);
+        $alap = str_replace("\\", "/", dirname($_SERVER["SCRIPT_NAME"]));//Windowsnál visszaper jön, ha domainként fut
+        if (!preg_match("/" . $this->getTextToRegex($alap) . "(.*)/", $_SERVER["REQUEST_URI"], $preg)) {
+            //TODO: 404-es hibát kell majd dobni
+            throw new \Exception(Errors::getMessage(2001), 2001);
         }
-        return $preg[1];
+        $return = new actualRoute();
+        $return->method=$_SERVER["REQUEST_METHOD"];
+        $return->route = (empty($preg[1]) ? "/" : (substr($preg[1],0,1)!="/"?"/".$preg[1]:$preg[1]));//Azért kell, mert domain-nál így működik csak
+        return $return;
     }
+
+    /**
+     * Visszaadja az url-re illeszkedő routokat
+     * @return int[]
+     * @throws \Exception
+     */
     public function searchRoutes()
     {
         $actualRoute = $this->getActualRoute();
-      //  echo $actualRoute;
+        $selected = [];
         $find = false;
-        foreach ($this->_routes AS $route){
+        foreach ($this->_routes as $index => $route) {
             $variables = [];
-            if(preg_match("/^".$this->getTextToRegex($route->getPath(),$variables)."$/",$actualRoute,$preg)){
-                print_r($variables);
+            if (preg_match("/^" . $this->getTextToRegex($route->getPath(), $variables) . "$/", $actualRoute->route, $preg)) {
+                if(!empty($variables)) {
+                    array_shift($preg);
+                    $route->addVariables($preg);//A paramétereket hozáadjuk
+                }
+                $selected[] = $index;
                 $find = true;
             }
         }
+        return $selected;
+    }
 
+    protected function addView($ui_file)
+    {
+        $this->_routes[count($this->_routes) - 1]->addView($ui_file);
+    }
+    protected function json(){
+        $this->_routes[count($this->_routes) - 1]->addView("json");
+    }
+
+    /**
+     * @param $index
+     * @return Route
+     */
+    public function getRoute($index)
+    {
+        return $this->_routes[$index];
     }
 }
 
 class addCallback extends CallBack
 {
-
+    public function view($ui_file){
+        return $this->ParentClass->addView($ui_file);
+    }
+    public function json(){
+        return $this->ParentClass->json();
+    }
+}
+class actualRoute{
+    public $route;
+    public $method;
 }

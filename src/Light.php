@@ -24,6 +24,6 @@ class Light extends Prefab
     }
     public function run()
     {
-        self::$Routing->searchRoutes();
+        $render = new Rendering();
     }
 }
