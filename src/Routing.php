@@ -16,6 +16,10 @@ class Routing
      */
     private $_routes = [];
     /**
+     * @var actualRoute $_actualRoute
+     */
+    private $_actualRoute;
+    /**
      * Ide betesszük a protected methódus meghívót, hogy kívülről működjön
      */
     use CallProtected;
@@ -52,7 +56,7 @@ class Routing
      */
     private function getTextToRegex($path, &$variables = null)
     {
-        $csillag = ["______", ".+?"];
+        $csillag = ["______", ".*?"];
         $path = str_replace("*", $csillag[0], $path);
         if (preg_match_all("/\{([^\}]+)\}/", $path, $preg)) {
             $search = [];
@@ -61,7 +65,7 @@ class Routing
                 $variables[] = $value;
                 $search[] = "{" . $value . "}";
                 $replace[] = "__" . $value . "__";
-                $replace2[] = "(.+?)";
+                $replace2[] = "(.*?)";
 
             }
             $path = str_replace($search, $replace, $path);
@@ -82,6 +86,15 @@ class Routing
     public function getActualRoute()
     {
 
+        if(!is_null($this->_actualRoute)){
+            return $this->_actualRoute;
+        }
+
+        if(isset($_SERVER["argv"]) && $_SERVER["argc"]>1){
+            $this->_actualRoute = new actualRoute($_SERVER["argv"][1],"CLI");
+            return $this->_actualRoute;
+        }
+
         $alap = str_replace("\\", "/", dirname($_SERVER["SCRIPT_NAME"]));//Windowsnál visszaper jön, ha domainként fut
         if (!preg_match("/" . $this->getTextToRegex($alap) . "(.*)/", $_SERVER["REQUEST_URI"], $preg)) {
             Light::instance()->setError(404);
@@ -91,7 +104,8 @@ class Routing
         $return = new actualRoute();
         $return->method=$_SERVER["REQUEST_METHOD"];
         $return->route = (empty($preg[1]) ? "/" : (substr($preg[1],0,1)!="/"?"/".$preg[1]:$preg[1]));//Azért kell, mert domain-nál így működik csak
-        return $return;
+        $this->_actualRoute = $return;
+        return $this->_actualRoute;
     }
 
     /**
@@ -101,14 +115,24 @@ class Routing
      */
     public function searchRoutes()
     {
-        $actualRoute = $this->getActualRoute();
+        $this->getActualRoute();
+
+        $actualRoute = $this->_actualRoute;
         //TODO: ezen a ponton kell beépíteni a jogosultságkezelést
         $selected = [];
+
         foreach ($this->_routes as $index => $route) {
             $variables = [];
+            //echo $this->getTextToRegex($route->getPath(), $variables)."\n";
             //A \/* azért kell, mert mappánál így a / jel is lehet a vége
             if (preg_match("/^" . $this->getTextToRegex($route->getPath(), $variables) . "\/*$/", $actualRoute->route, $preg) && $route->hasMethod($actualRoute->method)) {
-                if(!empty($variables)) {
+                if($actualRoute->method == "CLI" && $_SERVER["argc"]>2){
+                    $variables = $_SERVER["argv"];
+                    array_shift($variables);
+                    array_shift($variables);
+                    $route->addVariables($variables);
+                }
+                elseif(!empty($variables)) {
                     array_shift($preg);
                     $route->addVariables($preg);//A paramétereket hozáadjuk
                 }
@@ -154,4 +178,13 @@ class addCallback extends CallBack
 class actualRoute{
     public $route;
     public $method;
+    public function __construct($route = null,$method = null)
+    {
+        if(!is_null($route)){
+            $this->route = $route;
+        }
+        if(!is_null($method)){
+            $this->method = $method;
+        }
+    }
 }

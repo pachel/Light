@@ -57,4 +57,8 @@ class Light extends Prefab
     {
         return self::$Config->set($name,$value);
     }
+    public function reroute($route){
+        header("location:".$this->get("url").$route);
+        exit();
+    }
 }

@@ -23,4 +23,7 @@ class MyController
         echo $id2;
         return ["status"=>1];
     }
+    public function cli(...$args){
+        print_r($args);
+    }
 }

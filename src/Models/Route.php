@@ -85,6 +85,9 @@ class Route
     {
         return $this->_path;
     }
+    public function getMethods(){
+        return $this->_methods;
+    }
 
     public function getCode()
     {
@@ -107,7 +110,9 @@ class Route
         if (empty($this->_code) || $this->_isErrorPage) {
             return null;
         }
-
+        if(Light::$Routing->getActualRoute()->method == "CLI" && ob_get_level()>0){
+            ob_end_flush();
+        }
         switch (gettype($this->_code)) {
             case "string":
                 return $this->runString();
