@@ -48,7 +48,7 @@ class Route
 
     public function addView($view)
     {
-        $this->_view = $view;
+        $this->_view = mb_strtoupper($view);
     }
 
     public function getView()
@@ -193,40 +193,43 @@ class Route
         }
 
         $content = file_get_contents($file);
-        $this->loadMethods($content);
+        $this->loadMethods($content,$file);
         if (!empty($this->_layout)) {
             $file = Light::$Config->get("UI") . $this->_layout;
             if (!is_file($file)) {
                 throw new \Exception("Nincs meg a fájl: " . $file);//TODO: bele kell tenni a hibaüzenet szövegét
             }
             $content = file_get_contents($file);
-            $this->loadMethods($content);
+            $this->loadMethods($content,$file);
         }
 
     }
 
-    private function loadMethods(&$content)
+    private function loadMethods(&$content,$file = null)
     {
         $this->setLoads($content);
-        $this->cut_content($content);
+        $this->cut_content($content,$file);
     }
 
-    private function cut_content($content)
+    private function cut_content($content,$file)
     {
-        $this->run_content($content);
         if (preg_match("/<!\-\-.*\[layout:(.+)\].*\-\->/i", $content, $preg)) {
             $this->_layout = $preg[1];
             $content = preg_replace("/<!\-\-.*\[layout:.+\].*\-\->/i", "", $content);//Kivesszük innen, már nem kell
+            $this->run_content($content,$file);
         }
-        if (preg_match_all("/<!\-\-\[name:(.+)\]\-\->(.+)/misU", $content, $preg)) {
+        if (preg_match_all("/<!\-\-\[name:(.+)\]\-\->(.*)/misU", $content, $preg)) {
             $splitted = "";
             for ($index = count($preg[0]) - 1; $index >= 0; $index--) {
                 $splitted = explode($preg[0][$index], (is_array($splitted) ? $splitted[0] : $content));
                 //$part->content = $splitted[1].($index==count($preg[0])-1?"\n":"");
                 $content = $splitted[1] . ($index == count($preg[0]) - 1 ? "\n" : "");
+                $this->run_content($content,$file);
                 $this->_contents[] = new Content(strtoupper($preg[1][$index]), $content);
             }
+
         } else {
+            $this->run_content($content,$file);
             $this->_contents[] = new Content("LAYOUT", $content);//Ha nem talál semit, akkor csak úgy hozzáadja a tartalmat
         }
 
@@ -246,7 +249,7 @@ class Route
                 //A html változók cseréje
                 $this->replace_variables($load_content);
                 //PHP tartalom futtatása
-                $this->run_content($load_content);
+                $this->run_content($load_content,$value);
                 $name = preg_replace("/(.+)\.[^\.]+$/", "$1", basename($value));
                 //$content = str_replace($preg[0][$index],"<!--".$name."-->\n".$load_content."\n<!--end of ".$name."-->\n",$content);
                 $content = str_replace($preg[0][$index], $load_content, $content);
@@ -264,32 +267,35 @@ class Route
         return $this->content;
     }
 
-    private function run_content(&$content)
+    private function run_content(&$content,$name = null)
     {
         //$this->content($content);
         //unset($content);
-        extract(Light::$Config->getAllVariables());
+
         /**
          * A lezáratlan php tegek lezárása
          */
         if (preg_match_all("/(<\?)|(\?>)/misU", $content, $preg)) {
             if (count($preg[0]) % 2 != 0) {
-                unset($preg);
+
                 $content .= "?>";
             }
         }
-        unset($preg);
         error_reporting(E_ERROR);
 
-        if (preg_match("/.+?\.php/i", $this->_view)) {
+        if (preg_match("/.+?\.php/i", empty($name)?$this->_view:$name)) {
             //eval("\?\>" . $content . "<?php");
-            eval("?>" . $content);
+            $this->eval($content);
             $content = ob_get_clean();
         } else {
 
         }
         error_reporting(E_ALL);
         ob_start();
+    }
+    private function eval($content){
+        extract(Light::$Config->getAllVariables());
+        eval("?>" . $content);
     }
 
     private function replace_variables(&$content)

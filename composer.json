@@ -2,6 +2,7 @@
   "name": "pachel/light",
   "description": "Light Framework",
   "type": "library",
+  "homepage": "https://github.com/pachel/Light",
   "autoload-dev": {
     "classmap": [
       "example/"
@@ -18,7 +19,7 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "php": ">=8.0",
+    "php": ">=7.4",
     "ext-mbstring": "*"
   },
   "require-dev": {

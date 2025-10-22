@@ -22,6 +22,11 @@ $app::$Routing->add("cli*", function ($app,$elso) {
 //$app::$Routing->add("*","MyController->teszt");//minden oldal
 $app::$Routing->add("/php")->view("multi.php");
 $app::$Routing->add("/multihtml")->view("multi.html");
+$app::$Routing->add("/empty")->view("empty.html");
+$app::$Routing->add("/reroute",function ($app){
+    $app->reroute("/php");
+
+})->view("multi.html");
 
 
 $app::$Routing->add("/product/{productname}.html", function ($id, $id2) {

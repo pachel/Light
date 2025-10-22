@@ -152,6 +152,9 @@ class Routing
     protected function json(){
         $this->_routes[count($this->_routes) - 1]->addView("json");
     }
+    protected function csv(){
+        $this->_routes[count($this->_routes) - 1]->addView("csv");
+    }
 
     /**
      * @param $index
@@ -173,6 +176,9 @@ class addCallback extends CallBack
     }
     public function json(){
         return $this->ParentClass->json();
+    }
+    public function csv(){
+        return $this->ParentClass->csv();
     }
 }
 class actualRoute{
