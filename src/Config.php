@@ -59,9 +59,11 @@ class Config
     protected function hasMinimal(&$config)
     {
         foreach (self::_MINIMAL as $item) {
-            if ($this->get($item) == null) {
+            $value = $this->get($item);
+            if ($value == null) {
                 return false;
             }
+            $this->set($item,$this->checkSlash($value));
         }
 
         return true;
