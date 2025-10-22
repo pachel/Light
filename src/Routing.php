@@ -22,7 +22,7 @@ class Routing
 
     public function __construct()
     {
-        $this->_url = Light::$Config->get("url");
+        $this->_url = Light::$Config->get("URL");
     }
 
 
@@ -82,11 +82,11 @@ class Routing
     public function getActualRoute()
     {
 
-        //TODO: ide majd be kell tenni a cli-t
         $alap = str_replace("\\", "/", dirname($_SERVER["SCRIPT_NAME"]));//Windowsnál visszaper jön, ha domainként fut
         if (!preg_match("/" . $this->getTextToRegex($alap) . "(.*)/", $_SERVER["REQUEST_URI"], $preg)) {
-            //TODO: 404-es hibát kell majd dobni
-            throw new \Exception(Errors::getMessage(2001), 2001);
+            Light::instance()->setError(404);
+            return null;
+            //throw new \Exception(Errors::getMessage(2001), 2001);
         }
         $return = new actualRoute();
         $return->method=$_SERVER["REQUEST_METHOD"];
@@ -102,18 +102,21 @@ class Routing
     public function searchRoutes()
     {
         $actualRoute = $this->getActualRoute();
+        //TODO: ezen a ponton kell beépíteni a jogosultságkezelést
         $selected = [];
-        $find = false;
         foreach ($this->_routes as $index => $route) {
             $variables = [];
-            if (preg_match("/^" . $this->getTextToRegex($route->getPath(), $variables) . "$/", $actualRoute->route, $preg)) {
+            //A \/* azért kell, mert mappánál így a / jel is lehet a vége
+            if (preg_match("/^" . $this->getTextToRegex($route->getPath(), $variables) . "\/*$/", $actualRoute->route, $preg) && $route->hasMethod($actualRoute->method)) {
                 if(!empty($variables)) {
                     array_shift($preg);
                     $route->addVariables($preg);//A paramétereket hozáadjuk
                 }
                 $selected[] = $index;
-                $find = true;
             }
+        }
+        if(count($selected) == 0){
+            Light::instance()->setError(404);
         }
         return $selected;
     }
@@ -132,7 +135,10 @@ class Routing
      */
     public function getRoute($index)
     {
-        return $this->_routes[$index];
+        //print("getRoute:".count($this->_routes))."\n";
+        if(isset($this->_routes[$index])){
+            return $this->_routes[$index];
+        }
     }
 }
 

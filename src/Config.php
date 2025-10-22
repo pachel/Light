@@ -20,14 +20,22 @@ class Config
      */
     protected const _MINIMAL = ["URL", "UI"];
 
+    /**
+     * Azok a változók, amiket a rendszer alapból használ
+     * Ezek mindig nagybetűvel lesznek a set|get ben
+     */
+    protected const _SYSTEM_VARS = ["URL","UI","LOG"];
     public function __construct($config = null)
     {
         $this->checkHasRealConfig($config);
         $this->checkConfig($config);
     }
 
-    use SetGet;
     use CallProtected;
+    public function isSystemVar($name)
+    {
+        return in_array(strtoupper($name),self::_SYSTEM_VARS);
+    }
     protected function checkHasRealConfig(&$config){
         if(empty($config)){
             $defs = get_defined_constants(true);
@@ -67,7 +75,7 @@ class Config
             if (!is_dir($value)) {
                 throw new \Exception(Errors::getMessage(1002, $value), 1002);
             }
-            $this->set($name,$this->checkSlash($value));
+            $this->set($this->isSystem($name),$this->checkSlash($value));//Ha system var
         }
         return true;
     }
@@ -75,9 +83,13 @@ class Config
     protected function saveParams(&$config)
     {
         foreach ($config as $key => $value) {
-            $this->set($key, $value);
+            $this->set($this->isSystem($key), $value);
             $this->dirExists($key);
         }
+    }
+    protected function isSystem($name)
+    {
+        return (in_array($name,self::_SYSTEM_VARS)?strtoupper($name):$name);
     }
 
     protected function checkSlash($string)
@@ -89,5 +101,35 @@ class Config
     }
     public function getAllVariables(){
         return $this->_VARIABLES;
+    }
+    /**
+     * @var string[] $_VARIABLES
+     */
+    private $_VARIABLES = [];
+    /**
+     * @param $name
+     * @param $value
+     * @return void
+     */
+    public function set($name,$value){
+        if($this->isSystemVar($name)){
+            $name = strtoupper($name);
+        }
+        $this->_VARIABLES[$name] = $value;
+        return $value;
+    }
+
+    /**
+     * @param $name
+     * @return string|null
+     */
+    public function get($name){
+        // $name = strtoupper($name);
+        if($this->isSystemVar($name)){
+            $name = strtoupper($name);
+        }
+        if(isset($this->_VARIABLES[$name]))
+            return $this->_VARIABLES[$name];
+        return null;
     }
 }

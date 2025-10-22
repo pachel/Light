@@ -1,0 +1,16 @@
+div{
+    margin: 10px;
+    border: 1px solid black;
+}
+.content{
+    padding: 10px;
+    background-color: aqua;
+}
+.load{
+    padding: 10px;
+    background-color: bisque;
+}
+.php{
+    padding: 10px;
+    background-color: cornflowerblue;
+}
