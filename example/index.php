@@ -1,5 +1,4 @@
 <?php
-ob_start();
 error_reporting(E_NOTICE | E_ERROR | E_WARNING);
 ini_set("display_errors", 1);
 require __DIR__ . "/../vendor/autoload.php";
@@ -23,11 +22,11 @@ $app::$Routing->add("cli*", function ($app,$elso) {
 $app::$Routing->add("/php")->view("multi.php");
 $app::$Routing->add("/multihtml")->view("multi.html");
 $app::$Routing->add("/empty")->view("empty.html");
+$app::$Routing->add("/demo")->view("demo.html");
 $app::$Routing->add("/reroute",function ($app){
     $app->reroute("/php");
 
 })->view("multi.html");
-
 
 $app::$Routing->add("/product/{productname}.html", function ($id, $id2) {
     echo $id . "\n";

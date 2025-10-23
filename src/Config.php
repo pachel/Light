@@ -58,6 +58,9 @@ class Config
 
     protected function hasMinimal(&$config)
     {
+        if(defined("LFW_CLI") && LFW_CLI){
+            return true;
+        }
         foreach (self::_MINIMAL as $item) {
             $value = $this->get($item);
             if ($value == null) {

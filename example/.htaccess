@@ -1,15 +1,19 @@
-# Enable rewrite engine and route requests to framework
 RewriteEngine On
-# Some servers require you to specify the `RewriteBase` directive
-# In such cases, it should be the path (relative to the document root)
-# containing this .htaccess file
-#
+
+# Szükség esetén aktiváld ezt:
 # RewriteBase /
 
-RewriteRule ^(app)\/|\.ini$ - [R=404]
+# Tiltás: ha létező fájl vagy mappa, és nem a public mappában van
+#RewriteCond %{REQUEST_URI} !^/public/
+#RewriteCond %{REQUEST_URI} !^/vendor/
+#RewriteCond %{REQUEST_FILENAME} -f [OR]
+#RewriteCond %{REQUEST_FILENAME} -d
+#RewriteRule ^.*$ - [F,L]
 
-RewriteCond %{REQUEST_FILENAME} !-l
+# Ha nem létező fájl vagy mappa, irányítsd az index.php-ra
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule .* index.php [L,QSA]
+RewriteRule ^.*$ index.php [L,QSA]
+
+# HTTP_AUTHORIZATION header továbbítása
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]

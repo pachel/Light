@@ -9,7 +9,9 @@
     ]
   },
   "autoload": {
-    "classmap": ["src/","lib/","Installer"]
+    "classmap": ["src/","lib/",
+      "bin"
+    ]
   },
   "authors": [
     {
@@ -26,6 +28,6 @@
     "phpunit/phpunit": "*"
   },
   "bin": [
-    "installer/install"
+    "bin/light"
   ]
 }

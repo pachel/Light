@@ -1,5 +1,9 @@
 #!/usr/bin/env php
 <?php
+
+use Pachel\Light\src\cliBin;
+use Pachel\Light\src\Light;
+
 if(PHP_MAJOR_VERSION.PHP_MINOR_VERSION<74){
     echo "PHP 7.4 kell minimum!";
     die(1);
@@ -18,4 +22,8 @@ if (isset($GLOBALS['_composer_autoload_path'])) {
     unset($file);
 }
 require COMPOSER_AUTOLOAD;
-echo "asd";
+const LFW_CLI = true;
+
+$app = Light::instance();
+$app::$Routing->add("install",[cliBin::class,"Install"],"cli");
+$app->run();

@@ -111,7 +111,7 @@ class Route
             return null;
         }
         if(Light::$Routing->getActualRoute()->method == "CLI" && ob_get_level()>0){
-            ob_end_flush();
+            //ob_end_flush();
         }
         switch (gettype($this->_code)) {
             case "string":
