@@ -9,7 +9,7 @@
     ]
   },
   "autoload": {
-    "classmap": ["src/","lib/"]
+    "classmap": ["src/","lib/","Installer"]
   },
   "authors": [
     {
