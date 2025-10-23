@@ -28,8 +28,11 @@ class Light extends Prefab
     public function run()
     {
         $render = new Rendering();
+
         if($this->_errorCode == 0) {
-            $render->showPage();
+            if(!$render->showPage()){
+                $this->setError(404);
+            }
         }
         $this->getError();
     }
@@ -43,6 +46,7 @@ class Light extends Prefab
     {
 
         if($this->_errorCode == 0){
+
             return;
         }
         ob_clean();

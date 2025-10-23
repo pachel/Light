@@ -48,19 +48,30 @@ class Rendering
 
     public function showPage()
     {
+        $e = "";
         foreach ($this->_selectedRoutes as $index) {
             $view = Light::$Routing->getRoute($index)->getView();
-            $content = $this->Render(Light::$Routing->getRoute($index));
-            $this->printConntent($content,$view);
-            if (!empty($view)) {
-                return;
+            if(empty($view)){
+                continue;
             }
+            $e.="1";
+            $content = $this->Render(Light::$Routing->getRoute($index));
+
+            $this->printConntent($content,$view);
         }
+        if (empty($e)) {
+             return false;
+        }
+        return true;
     }
 
     public function printConntent(&$content, $view)
     {
         if (!$this->isDirectContent($view)){
+            if(empty($content)){
+                Light::instance()->setError(204);
+                return;
+            }
             echo $content;
             return;
 

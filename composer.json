@@ -9,9 +9,7 @@
     ]
   },
   "autoload": {
-    "classmap": ["src/","lib/",
-      "bin"
-    ]
+    "classmap": ["src/","lib/"]
   },
   "authors": [
     {

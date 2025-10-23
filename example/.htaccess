@@ -3,12 +3,6 @@ RewriteEngine On
 # Szükség esetén aktiváld ezt:
 # RewriteBase /
 
-# Tiltás: ha létező fájl vagy mappa, és nem a public mappában van
-#RewriteCond %{REQUEST_URI} !^/public/
-#RewriteCond %{REQUEST_URI} !^/vendor/
-#RewriteCond %{REQUEST_FILENAME} -f [OR]
-#RewriteCond %{REQUEST_FILENAME} -d
-#RewriteRule ^.*$ - [F,L]
 
 # Ha nem létező fájl vagy mappa, irányítsd az index.php-ra
 RewriteCond %{REQUEST_FILENAME} !-f
