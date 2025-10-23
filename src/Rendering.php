@@ -7,6 +7,7 @@ use Pachel\Light\src\Models\Route;
 class Rendering
 {
     private $_selectedRoutes = [];
+    private $_code_content = null;
     /**
      * @var string[] Azoka view nevek, amiknél csak a tartalom lesz generálva json|csv
      */
@@ -28,7 +29,15 @@ class Rendering
     private function runCodes()
     {
         foreach ($this->_selectedRoutes as $index) {
-            Light::$Routing->getRoute($index)->run();
+            $this->_code_content = Light::$Routing->getRoute($index)->run();
+            if(!empty($this->_code_content)){
+                $this->printConntent($this->_code_content,Light::$Routing->getRoute($index)->getView());
+                Light::instance()->setError(-1);
+                return;
+            }
+        }
+        if(!empty($this->_code_content)){
+            Light::instance()->setError(-1);
         }
     }
 
@@ -77,9 +86,21 @@ class Rendering
 
         }
         switch (mb_strtoupper($view,"UTF-8")){
-
+            case "JSON": $this->printJson($content);break;
+            case "CSV": $this->printCsv($content);break;
+            default: print_r($content);
         }
-        echo $content;
+
+    }
+    private function printCsv($content){
+        header('Access-Control-Allow-Origin: *');
+        header("Content-Type: text/csv; charset=utf-8");
+        //TODO: A csv-t meg kell csinálni
+    }
+    private function printJson($content){
+        header('Access-Control-Allow-Origin: *');
+        header("Content-type: application/json; charset=utf-8");
+        echo json_encode($content,JSON_PRETTY_PRINT);
     }
 
     /**

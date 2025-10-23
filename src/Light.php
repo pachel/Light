@@ -45,11 +45,12 @@ class Light extends Prefab
     public function getError()
     {
 
-        if($this->_errorCode == 0){
-
+        if($this->_errorCode <= 0 || self::$Routing->getActualRoute()->method == "CLI"){
             return;
         }
-        ob_clean();
+        if(ob_get_level()>0) {
+            ob_clean();
+        }
         header(self::HTTPStatus($this->_errorCode)["error"], true, $this->_errorCode);
         exit();
     }

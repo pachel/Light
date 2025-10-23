@@ -25,6 +25,10 @@ $app::$Routing->add("cli*", function ($app,$elso) {
 //$app::$Routing->add("*","MyController->teszt");//minden oldal
 $app::$Routing->add("/php")->view("multi.php");
 $app::$Routing->add("/multihtml")->view("multi.html");
+$app::$Routing->add("/demo")->view("demo.html");
+$app::$Routing->add("/json",function (){
+    return ["return"=>true];
+})->json();
 $app::$Routing->add("/empty")->view("empty.html");
 //$app::$Routing->add("/demo")->view("demo.html");
 $app::$Routing->add("/reroute",function ($app){
