@@ -13,7 +13,12 @@ class cliBin
     public function __construct($app)
     {
         $this->app = $app;
-        $this->root = __DIR__ . "/../";
+        if(defined("LFW_DEV_MODE") && LFW_DEV_MODE){
+            $this->root = __DIR__ . "/../example/";
+        }
+        else {
+            $this->root = __DIR__ . "/../../../../";
+        }
     }
 
     private function copyFiles($from = null)

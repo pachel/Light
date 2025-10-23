@@ -1,4 +1,5 @@
 <?php
+define("LFW_DEV_MODE",true);
 if(file_exists(__DIR__."/dev_config.php")){
     include __DIR__."/dev_config.php";
     define("K_KEX",1);
