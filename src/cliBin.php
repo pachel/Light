@@ -13,7 +13,7 @@ class cliBin
     public function __construct($app)
     {
         $this->app = $app;
-        $this->root = __DIR__ . "/../example/";
+        $this->root = __DIR__ . "/../";
     }
 
     private function copyFiles($from = null)
