@@ -15,6 +15,6 @@ class Installer
 
     public static function postUpdate()
     {
-
+        echo "POST UPDATE";
     }
 }
