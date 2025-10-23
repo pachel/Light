@@ -25,12 +25,7 @@
   "require-dev": {
     "phpunit/phpunit": "*"
   },
-  "scripts": {
-    "post-install-cmd": [
-      "Pachel\\Light\\Install\\Installer::postInstall"
-    ],
-    "post-update-cmd": [
-      "Pachel\\Light\\Install\\Installer::postUpdate"
-    ]
-  }
+  "bin": [
+    "installer/install"
+  ]
 }

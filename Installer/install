@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+if(PHP_MAJOR_VERSION.PHP_MINOR_VERSION<74){
+    echo "PHP 7.4 kell minimum!";
+    die(1);
+}
+if (isset($GLOBALS['_composer_autoload_path'])) {
+    define('COMPOSER_AUTOLOAD', $GLOBALS['_composer_autoload_path']);
+    unset($GLOBALS['_composer_autoload_path']);
+} else {
+    foreach (array(__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php') as $file) {
+        if (file_exists($file)) {
+            define('COMPOSER_AUTOLOAD', $file);
+            break;
+        }
+    }
+
+    unset($file);
+}
+require COMPOSER_AUTOLOAD;
+echo "asd";
