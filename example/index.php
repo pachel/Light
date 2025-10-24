@@ -1,15 +1,17 @@
 <?php
 
+use Pachel\Light\src\Light;
+
 error_reporting(E_NOTICE | E_ERROR | E_WARNING);
 ini_set("display_errors", 1);
 require __DIR__ . "/../vendor/autoload.php";
 require __DIR__ . "/config.php";
 
-$app = \Pachel\Light\src\Light::instance();
+$app = Light::instance();
 $app::$Routing->add("*", function ($app) {
 
 
-    //$app->set("ALWAYS_RUNNING", "Always running");
+    $app->set("ALWAYS_RUNNING", "Always running");
 });//minden oldal
 $app::$Routing->add("/")->view("single.html");//Kezdőoldal
 $app::$Routing->add("/function", function ($app) {
@@ -29,6 +31,11 @@ $app::$Routing->add("/demo")->view("demo.html");
 $app::$Routing->add("/json",function (){
     return ["return"=>true];
 })->json();
+$app::$Routing->add("/csv",function (){
+    $row[] = [1,25,47,33];
+    $row[] = [1,20,40,33];
+    return $row;
+})->csv();
 $app::$Routing->add("/empty")->view("empty.html");
 //$app::$Routing->add("/demo")->view("demo.html");
 $app::$Routing->add("/reroute",function ($app){

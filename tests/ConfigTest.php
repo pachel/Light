@@ -66,6 +66,7 @@ class ConfigTest extends TestCase
         ];
         $t = new Config($config);
         $this->assertEquals($config["ui"]."/",$t->get("ui"),"A / jel nem lett betéve");
+        $this->assertEquals($config["url"]."/",$t->get("url"),"A / jel nem lett betéve");
 
     }
 

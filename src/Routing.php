@@ -96,7 +96,12 @@ class Routing
         }
 
         $alap = str_replace("\\", "/", dirname($_SERVER["SCRIPT_NAME"]));//Windowsnál visszaper jön, ha domainként fut
-        if (!preg_match("/" . $this->getTextToRegex($alap) . "(.*)/", $_SERVER["REQUEST_URI"], $preg)) {
+        $url = $_SERVER["REQUEST_URI"];
+        if(preg_match("/\?/",$url)){//H avan get paramáter ,akkor arra is figlyelni kell
+            $l = explode("?",$url);
+            $url = $l[0];
+        }
+        if (!preg_match("/" . $this->getTextToRegex($alap) . "(.*)/", $url, $preg)) {
             Light::instance()->setError(404);
             return null;
             //throw new \Exception(Errors::getMessage(2001), 2001);
@@ -104,6 +109,7 @@ class Routing
         $return = new actualRoute();
         $return->method=$_SERVER["REQUEST_METHOD"];
         $return->route = (empty($preg[1]) ? "/" : (substr($preg[1],0,1)!="/"?"/".$preg[1]:$preg[1]));//Azért kell, mert domain-nál így működik csak
+
         $this->_actualRoute = $return;
         return $this->_actualRoute;
     }

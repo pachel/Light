@@ -96,6 +96,21 @@ class Rendering
         header('Access-Control-Allow-Origin: *');
         header("Content-Type: text/csv; charset=utf-8");
         //TODO: A csv-t meg kell csinálni
+        if(!is_array($content)){
+            return;
+        }
+        foreach ($content AS $row){
+            if(!is_array($row)){
+                return;
+            }
+            foreach ($row AS $index => $col){
+                if($index>0){
+                    echo ";";
+                }
+                echo $col;
+            }
+            echo "\n";
+        }
     }
     private function printJson($content){
         header('Access-Control-Allow-Origin: *');
