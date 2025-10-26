@@ -295,6 +295,8 @@ class Route
     }
     private function eval($content){
         extract(Light::$Config->getAllVariables());
+        $POST = $_POST;
+        $GET = $_GET;
         eval("?>" . $content);
     }
 

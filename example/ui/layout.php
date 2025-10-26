@@ -8,25 +8,34 @@
 </head>
 <body>
 <div class="load">
-<!--[load:loadtolayout.php]-->
+    <!--[load:loadtolayout.php]-->
 </div>
 <div class="php">
+    <pre>
 <?php
 echo "LAYOUT";
 $vars = get_defined_vars();
-foreach ($vars AS $name => $var){
-    if($name == "content"){
+foreach ($vars as $name => $var) {
+    if ($name == "content") {
         continue;
     }
-    echo "<br>var <b>\$".$name."</b> = ".$var;
+    echo "<br>var <b>\$" . $name . "</b> = ";
+
+    if (is_array($var)) {
+        print_r($var);
+    } else {
+        echo $var;
+    }
+    //echo "\n";
 }
 ?>
+        </pre>
 </div>
 <div class="content">
-<!--[content:content]-->
+    <!--[content:content]-->
 </div>
 <div class="content">
-<!--[content:js]-->
+    <!--[content:js]-->
 </div>
 </body>
 </html>
