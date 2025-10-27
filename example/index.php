@@ -39,18 +39,18 @@ $app::$Routing->add("/csv",function (){
 $app::$Routing->add("/empty")->view("empty.html");
 //$app::$Routing->add("/demo")->view("demo.html");
 $app::$Routing->add("/reroute",function ($app){
-    //$app->reroute("/php");
+    $app->reroute("/php");
 
 })->view("multi.html");
 
-$app::$Routing->add("/product/{productname}.html", function (...$s) {
-echo "adasasd";
+$app::$Routing->add("/product/{productname}.html", function ($app,$var) {
+    $app->set("_name",$var);
 
-});//regexes
+})->view("product.php");
 
 $app::$Auth->policy()->deny();
 $app::$Auth->allow("/php");
 $app::$Auth->AuthMethod(function ($app,$url){
-    return false;
+    return true;
 });
 $app->run();

@@ -48,7 +48,7 @@ class Route
 
     public function addView($view)
     {
-        $this->_view = mb_strtoupper($view);
+        $this->_view = !preg_match("/\.[^\.]+$/",$view)?mb_strtoupper($view):$view;
     }
 
     public function getView()
