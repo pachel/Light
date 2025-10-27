@@ -69,9 +69,14 @@ class Route
             return;
         }
 
-        if (preg_match_all("/(post|get|ajax|cli)/i", $methods, $preg)) {
+        if (preg_match_all("/(post|get|ajax|cli|xhr)/i", $methods, $preg)) {
             foreach ($preg[0] as $value) {
-                $this->_methods[] = strtoupper($value);
+                $value = strtoupper($value);
+                if($value == "AJAX"){
+                    $this->_methods[] = "XHR";
+                    continue;
+                }
+                $this->_methods[] = $value;
             }
         }
     }
@@ -113,44 +118,13 @@ class Route
         if(Light::$Routing->getActualRoute()->method == "CLI" && ob_get_level()>0){
             //ob_end_flush();
         }
-        switch (gettype($this->_code)) {
-            case "string":
-                return $this->runString();
-            case  "object":
-                return $this->runObject();
-            case "array":
-                return $this->runArray();
+        $codeRunner = new codeRunner($this->_code);
+        if(!empty($this->_variables)){
+            $codeRunner->addVariables($this->_variables);
         }
+        $this->_code_return = $codeRunner->run();
+        return $this->_code_return;
     }
-
-    private function runObject()
-    {
-        return $this->_code_return = ($this->_code)(...array_merge([Light::instance()], $this->_variables));
-    }
-
-    private function runArray()
-    {
-        return $this->runClass($this->_code[0], $this->_code[1]);
-    }
-
-    private function runString()
-    {
-        if (preg_match("/^(.+?)\->(.+)$/", $this->_code, $preg)) {
-            return $this->runClass($preg[1], $preg[2]);
-        }
-        return null;
-    }
-
-    private function runClass($class, $method)
-    {
-        if (!class_exists($class) || !method_exists($class, $method)) {
-            Light::instance()->setError(405);
-            return null;
-        }
-        $c = new $class(Light::instance());
-        return $c->{$method}(...$this->_variables);
-    }
-
     /**
      * @return Content|void
      */

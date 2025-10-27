@@ -54,7 +54,7 @@ class Routing
      * @param $variables
      * @return array|string|string[]
      */
-    private function getTextToRegex($path, &$variables = null)
+    protected function getTextToRegex($path, &$variables = null)
     {
         $csillag = ["______", ".*?"];
         $path = str_replace("*", $csillag[0], $path);

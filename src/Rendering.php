@@ -16,9 +16,15 @@ class Rendering
     public function __construct()
     {
         $this->_selectedRoutes = Light::$Routing->searchRoutes();
+
+        if(!Light::$Auth->authenticate(Light::$Routing->getActualRoute()->route)) {
+            Light::instance()->setError(403);
+            return;
+        }
         if (empty($this->_selectedRoutes)) {
             Light::instance()->setError(404);
         }
+
         $this->runCodes();
     }
 

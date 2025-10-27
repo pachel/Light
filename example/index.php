@@ -25,7 +25,7 @@ $app::$Routing->add("cli*", function ($app,$elso) {
 }, "cli");//minden oldal
 //$app::$Routing->add("*",[MyController::class,"teszt"]);//minden oldal
 //$app::$Routing->add("*","MyController->teszt");//minden oldal
-$app::$Routing->add("/php")->view("multi.php");
+$app::$Routing->add("/php",null,"get|post|ajax")->view("multi.php");
 $app::$Routing->add("/multihtml")->view("multi.html");
 $app::$Routing->add("/demo")->view("demo.html");
 $app::$Routing->add("/json",function (){
@@ -48,5 +48,9 @@ echo "adasasd";
 
 });//regexes
 
-
+$app::$Auth->policy()->deny();
+$app::$Auth->allow("/php");
+$app::$Auth->AuthMethod(function ($app,$url){
+    return false;
+});
 $app->run();
