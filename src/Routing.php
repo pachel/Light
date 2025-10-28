@@ -90,13 +90,13 @@ class Routing
             return $this->_actualRoute;
         }
 
-        if(isset($_SERVER["argv"]) && $_SERVER["argc"]>1){
-            $this->_actualRoute = new actualRoute($_SERVER["argv"][1],"CLI");
+        if(isset($_SERVER["argv"]) && $_SERVER["argc"]>0){//Ha egynél több paraméter van, akkor az első paraméter a rout
+            $this->_actualRoute = new actualRoute($_SERVER["argc"]>1?$_SERVER["argv"][1]:"","CLI");
             return $this->_actualRoute;
         }
 
         $alap = str_replace("\\", "/", dirname($_SERVER["SCRIPT_NAME"]));//Windowsnál visszaper jön, ha domainként fut
-        $url = $_SERVER["REQUEST_URI"];
+        $url = isset($_SERVER["REQUEST_URI"])?$_SERVER["REQUEST_URI"]:"";
         if(preg_match("/\?/",$url)){//H avan get paramáter ,akkor arra is figlyelni kell
             $l = explode("?",$url);
             $url = $l[0];
