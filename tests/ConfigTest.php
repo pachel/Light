@@ -26,6 +26,29 @@ class ConfigTest extends TestCase
         $this->expectExceptionCode(1001);
         $t = new Config($config);
     }
+
+    /**
+     * @covers \Pachel\Light\src\Config::hasMinimal
+     * @return void
+     */
+    public function testOnlyCli(){
+        $config = [
+            "CLI"=>true
+        ];
+        $t = new Config($config);
+        self::assertTrue($t->get("cli"));
+    }
+
+    /**
+     * @covers \Pachel\Light\src\Config::checkConfig
+     * @return void
+     */
+    public function testOnlyCliDef(){
+        define("LFW_CLI",true);
+        $config = [];
+        $t = new Config($config);
+        self::assertTrue($t->get("cli"));
+    }
     /**
      * @covers \Pachel\Light\src\Config::dirExists
      * @return void

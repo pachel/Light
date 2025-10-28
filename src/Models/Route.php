@@ -70,6 +70,7 @@ class Route
         }
 
         if (preg_match_all("/(post|get|ajax|cli|xhr)/i", $methods, $preg)) {
+            $this->_methods = [];
             foreach ($preg[0] as $value) {
                 $value = strtoupper($value);
                 if($value == "AJAX"){

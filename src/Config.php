@@ -24,7 +24,7 @@ class Config
      * Azok a változók, amiket a rendszer alapból használ
      * Ezek mindig nagybetűvel lesznek a set|get ben
      */
-    protected const _SYSTEM_VARS = ["URL","UI","LOG"];
+    protected const _SYSTEM_VARS = ["URL","UI","LOG","CLI"];
     public function __construct($config = null)
     {
         $this->checkHasRealConfig($config);
@@ -58,7 +58,7 @@ class Config
 
     protected function hasMinimal(&$config)
     {
-        if(defined("LFW_CLI") && LFW_CLI){
+        if($this->get("CLI")){
             return true;
         }
         foreach (self::_MINIMAL as $item) {
