@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{TITLE}}</title>
+    <base href="{{URL}}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <style>
@@ -23,10 +24,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active" aria-current="page" href="demo">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/json">JSON</a>
+                        <a class="nav-link" href="json">JSON</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="csv">CSV</a>
@@ -39,9 +40,9 @@
                             Products
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/product/Product1.html">Product 1</a></li>
-                            <li><a class="dropdown-item" href="/product/Product2.html">Product 2</a></li>
-                            <li><a class="dropdown-item" href="/product/Product3.html">Product 3</a></li>
+                            <li><a class="dropdown-item" href="product/Product1.html">Product 1</a></li>
+                            <li><a class="dropdown-item" href="product/Product2.html">Product 2</a></li>
+                            <li><a class="dropdown-item" href="product/Product3.html">Product 3</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -61,7 +62,11 @@
                         if ($name == "content") {
                             continue;
                         }
-                        echo "<br>var <b>\$" . $name . "</b> = " . $var;
+                        echo "<br>var <b>\$" . $name . "</b> = ";
+                        if(is_array($var))
+                            print_r($var);
+                        else
+                            echo $var;
                     }
                     ?>
                   </p>

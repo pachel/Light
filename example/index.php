@@ -19,7 +19,6 @@ $app::$Routing->add("/function", function ($app) {
 })->view("function.php");
 $app::$Routing->add("/class", [MyController::class, "teszt"])->view("class.php");
 $app::$Routing->add("/string", "MyController->string")->view("layout.php");
-
 $app::$Routing->add("cli*", function ($app,$elso) {
     echo $elso;
 }, "cli");//minden oldal
@@ -38,19 +37,22 @@ $app::$Routing->add("/csv",function (){
 })->csv();
 $app::$Routing->add("/empty")->view("empty.html");
 //$app::$Routing->add("/demo")->view("demo.html");
+/**
+ * @var Light $app
+ */
 $app::$Routing->add("/reroute",function ($app){
     $app->reroute("/php");
-
 })->view("multi.html");
-
 $app::$Routing->add("/product/{productname}.html", function ($app,$var) {
     $app->set("_name",$var);
-
 })->view("product.php");
 
 $app::$Auth->policy()->deny();
 $app::$Auth->allow("/php");
 $app::$Auth->AuthMethod(function ($app,$url){
+    if(Light::$Routing->getActualRoute()->method == "CLI"){
+        return true;
+    }
     return true;
 });
 $app->run();
