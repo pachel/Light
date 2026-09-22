@@ -48,7 +48,7 @@ class Route
 
     public function addView($view)
     {
-        $this->_view = !preg_match("/\.[^\.]+$/",$view)?mb_strtoupper($view):$view;
+        $this->_view = !preg_match("/\.[^\.]+$/", $view) ? mb_strtoupper($view) : $view;
     }
 
     public function getView()
@@ -73,7 +73,7 @@ class Route
             $this->_methods = [];
             foreach ($preg[0] as $value) {
                 $value = strtoupper($value);
-                if($value == "AJAX"){
+                if ($value == "AJAX") {
                     $this->_methods[] = "XHR";
                     continue;
                 }
@@ -91,7 +91,9 @@ class Route
     {
         return $this->_path;
     }
-    public function getMethods(){
+
+    public function getMethods()
+    {
         return $this->_methods;
     }
 
@@ -116,16 +118,17 @@ class Route
         if (empty($this->_code) || $this->_isErrorPage) {
             return null;
         }
-        if(Light::$Routing->getActualRoute()->method == "CLI" && ob_get_level()>0){
+        if (Light::$Routing->getActualRoute()->method == "CLI" && ob_get_level() > 0) {
             //ob_end_flush();
         }
         $codeRunner = new codeRunner($this->_code);
-        if(!empty($this->_variables)){
+        if (!empty($this->_variables)) {
             $codeRunner->addVariables($this->_variables);
         }
         $this->_code_return = $codeRunner->run();
         return $this->_code_return;
     }
+
     /**
      * @return Content|void
      */
@@ -149,15 +152,35 @@ class Route
 
         $layout = $this->getLayout();
         $this->replace_variables($layout->content);
+        $VOLT = [];
         foreach ($this->_contents as $content) {
             if ($content->name == $layout->name) {
                 continue;
             }
-            $layout->content = preg_replace("/<!\-\-.*\[content:" . $content->name . "\].*\-\->/i", "<!--" . $content->name . "-->\n" . $content->content . "<!--END OF " . $content->name . "-->\n", $layout->content);
+            if (in_array($content->name, $VOLT)) {
+                continue;
+            }
+            $VOLT[] = $layout->name;
+            $ct = $this->joinContents($content->name);
+
+            $layout->content = preg_replace("/<!\-\-.*\[content:" . $content->name . "\].*\-\->/i", "<!--" . $content->name . "-->\n" . $ct . "<!--END OF " . $content->name . "-->\n", $layout->content);
+            //$layout->content = preg_replace("/<!\-\-.*\[content:" . $content->name . "\].*\-\->/i", "<!--" . $content->name . "-->\n" . $content->content . "<!--END OF " . $content->name . "-->\n", $layout->content);
         }
+
         //  $this->run_content($layout->content);
         return $layout->content;
+    }
 
+    private function joinContents($name)
+    {
+        $return = "";
+        foreach ($this->_contents as $content) {
+            if ($content->name == $name) {
+                $return = $content->content.$return;
+
+            }
+        }
+        return $return;
     }
 
     public function searchTags()
@@ -168,43 +191,59 @@ class Route
         }
 
         $content = file_get_contents($file);
-        $this->loadMethods($content,$file);
+        $this->loadMethods($content, $file);
         if (!empty($this->_layout)) {
             $file = Light::$Config->get("UI") . $this->_layout;
             if (!is_file($file)) {
                 throw new \Exception("Nincs meg a fájl: " . $file);//TODO: bele kell tenni a hibaüzenet szövegét
             }
             $content = file_get_contents($file);
-            $this->loadMethods($content,$file);
+            $this->loadMethods($content, $file);
         }
 
     }
 
-    private function loadMethods(&$content,$file = null)
+    private function loadMethods(&$content, $file = null)
     {
         $this->setLoads($content);
-        $this->cut_content($content,$file);
+        $this->cut_content($content, $file);
     }
 
-    private function cut_content($content,$file)
+    private function cut_content($content, $file)
     {
         if (preg_match("/<!\-\-.*\[layout:(.+)\].*\-\->/i", $content, $preg)) {
             $this->_layout = $preg[1];
             $content = preg_replace("/<!\-\-.*\[layout:.+\].*\-\->/i", "", $content);//Kivesszük innen, már nem kell
-            $this->run_content($content,$file);
+            $this->run_content($content, $file);
         }
+        $van = [];
         if (preg_match_all("/<!\-\-\[name:(.+)\]\-\->(.*)/misU", $content, $preg)) {
             $splitted = "";
             for ($index = count($preg[0]) - 1; $index >= 0; $index--) {
+                $name = strtoupper($preg[1][$index]);
+                if(isset($van[$name])) {
+                    $van[$name]++;
+                }
+                else{
+                    $van[$name] = 1;
+                }
                 $splitted = explode($preg[0][$index], (is_array($splitted) ? $splitted[0] : $content));
-                //$part->content = $splitted[1].($index==count($preg[0])-1?"\n":"");
-                $content = $splitted[1] . ($index == count($preg[0]) - 1 ? "\n" : "");
-                $this->run_content($content,$file);
-                $this->_contents[] = new Content(strtoupper($preg[1][$index]), $content);
+                $content = $splitted[count($splitted)-1] . ($index == count($preg[0]) - 1 ? "\n" : "");
+
+                if(count($splitted) >2){
+                    $sp = [""];
+                    for($i=count($splitted)-2;$i>=0;$i--){
+                        $sp[0]=$preg[0][$index].$splitted[$i].$sp[0];
+                    }
+                    $splitted = $sp;
+                }
+
+                $this->run_content($content, $file);
+                $this->_contents[] = new Content($name, $content);
             }
 
         } else {
-            $this->run_content($content,$file);
+            $this->run_content($content, $file);
             $this->_contents[] = new Content("LAYOUT", $content);//Ha nem talál semit, akkor csak úgy hozzáadja a tartalmat
         }
 
@@ -224,7 +263,7 @@ class Route
                 //A html változók cseréje
                 $this->replace_variables($load_content);
                 //PHP tartalom futtatása
-                $this->run_content($load_content,$value);
+                $this->run_content($load_content, $value);
                 $name = preg_replace("/(.+)\.[^\.]+$/", "$1", basename($value));
                 //$content = str_replace($preg[0][$index],"<!--".$name."-->\n".$load_content."\n<!--end of ".$name."-->\n",$content);
                 $content = str_replace($preg[0][$index], $load_content, $content);
@@ -233,16 +272,18 @@ class Route
 
 
     }
+
     private $content = null;
+
     private function content(&$content = null)
     {
-        if(is_null($this->content)){
+        if (is_null($this->content)) {
             $this->content = &$content;
         }
         return $this->content;
     }
 
-    private function run_content(&$content,$name = null)
+    private function run_content(&$content, $name = null)
     {
         //$this->content($content);
         //unset($content);
@@ -258,7 +299,7 @@ class Route
         }
         error_reporting(E_ERROR);
 
-        if (preg_match("/.+?\.php/i", empty($name)?$this->_view:$name)) {
+        if (preg_match("/.+?\.php/i", empty($name) ? $this->_view : $name)) {
             //eval("\?\>" . $content . "<?php");
             $this->eval($content);
             $content = ob_get_clean();
@@ -268,7 +309,9 @@ class Route
         error_reporting(E_ALL);
         ob_start();
     }
-    private function eval($content){
+
+    private function eval($content)
+    {
         extract(Light::$Config->getAllVariables());
         $POST = $_POST;
         $GET = $_GET;

@@ -1,9 +1,13 @@
 <!--[layout:layout.php]-->
 <!--[name:content]-->
-<!--[load:toload.php]-->
+asd
 <?php
 echo "TEST CONTENT";
 ?>
+<!--[load:toload.php]-->
 <!--[name:js]-->
-<?php
-echo "JS";
+JS1
+<!--[name:js]-->
+JS2
+<!--[name:js]-->
+JS3

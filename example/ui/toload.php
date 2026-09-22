@@ -4,3 +4,5 @@ HTML
 echo "TO LOAD";
 ?>
 </div>
+<!--[name:js]-->
+BEágyazott JS JS5
