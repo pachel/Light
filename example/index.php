@@ -47,6 +47,9 @@ $app::$Routing->add("/product/{productname}.html", function ($app,$var) {
     $app->set("_name",$var);
 })->view("product.php");
 
+$app::$Routing->add("/viewfromcode",function ($app){
+   $app->View("viewfromcode.php");
+});
 $app::$Auth->policy()->deny();
 $app::$Auth->allow("/php");
 $app::$Auth->AuthMethod(function ($app,$url){

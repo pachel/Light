@@ -1,0 +1,9 @@
+<!--[layout:layout.php]-->
+<!--[name:content]-->
+content
+<!--[name:js]-->
+JS1
+<!--[name:js]-->
+JS2
+<!--[name:js]-->
+JS3

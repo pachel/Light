@@ -122,7 +122,6 @@ class Routing
     public function searchRoutes()
     {
         $this->getActualRoute();
-
         $actualRoute = $this->_actualRoute;
         //TODO: ezen a ponton kell beépíteni a jogosultságkezelést
         $selected = [];
@@ -150,7 +149,12 @@ class Routing
         }
         return $selected;
     }
+    protected function _viewFromCode($viewPath)
+    {
+        $id = $this->searchRoutes();
+        $this->_routes[$id[count($id) - 1]]->addView($viewPath);
 
+    }
     protected function addView($ui_file)
     {
         $this->_routes[count($this->_routes) - 1]->addView($ui_file);
