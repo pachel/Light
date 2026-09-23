@@ -151,8 +151,9 @@ class Route
     {
 
         $layout = $this->getLayout();
-        $this->replace_variables($layout->content);
+
         $VOLT = [];
+
         foreach ($this->_contents as $content) {
             if ($content->name == $layout->name) {
                 continue;
@@ -166,7 +167,7 @@ class Route
             $layout->content = preg_replace("/<!\-\-.*\[content:" . $content->name . "\].*\-\->/i", "<!--" . $content->name . "-->\n" . $ct . "<!--END OF " . $content->name . "-->\n", $layout->content);
             //$layout->content = preg_replace("/<!\-\-.*\[content:" . $content->name . "\].*\-\->/i", "<!--" . $content->name . "-->\n" . $content->content . "<!--END OF " . $content->name . "-->\n", $layout->content);
         }
-
+        $this->replace_variables($layout->content);
         //  $this->run_content($layout->content);
         return $layout->content;
     }

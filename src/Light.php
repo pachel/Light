@@ -97,7 +97,7 @@ class Light extends Prefab
             return $this->set($params[0], $params[1]);
         }
     }
-    public function View($viewFile)
+    public function view($viewFile)
     {
         self::$Routing->_viewFromCode($viewFile);
     }

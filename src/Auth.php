@@ -47,13 +47,12 @@ class Auth
         if(substr($path,strlen($path)-1,1) == '/'){
             $path = substr($path,0,strlen($path)-1);
         }
+
+
         foreach ($this->paths as $search) {
             $text = Light::$Routing->getTextToRegex($search);
             if(preg_match("/^".$text."$/", $path)) {
                 return true;
-            }
-            else{
-                return false;
             }
         }
         return false;

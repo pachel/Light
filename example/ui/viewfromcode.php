@@ -1,6 +1,7 @@
 <!--[layout:layout.php]-->
 <!--[name:content]-->
 content
+{{URL}}
 <!--[name:js]-->
 JS1
 <!--[name:js]-->
