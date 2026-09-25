@@ -17,15 +17,18 @@ class Rendering
     {
         $this->_selectedRoutes = Light::$Routing->searchRoutes();
 
+
         if(!Light::$Auth->authenticate(Light::$Routing->getActualRoute()->route)) {
             Light::instance()->setError(403);
             return;
         }
+        //exit();
         if (empty($this->_selectedRoutes)) {
             Light::instance()->setError(404);
         }
 
         $this->runCodes();
+
     }
 
     /**
@@ -37,14 +40,17 @@ class Rendering
         foreach ($this->_selectedRoutes as $index) {
             $this->_code_content = Light::$Routing->getRoute($index)->run();
             if(!empty($this->_code_content)){
+                //TODO: ha van visszatérés, akkor ide json kell
                 $this->printConntent($this->_code_content,Light::$Routing->getRoute($index)->getView());
                 Light::instance()->setError(-1);
                 return;
             }
         }
+
         if(!empty($this->_code_content)){
             Light::instance()->setError(-1);
         }
+
     }
 
     private function isDirectContent($view)

@@ -123,6 +123,7 @@ class Routing
     {
         $this->getActualRoute();
         $actualRoute = $this->_actualRoute;
+
         //TODO: ezen a ponton kell beépíteni a jogosultságkezelést
         $selected = [];
 
@@ -130,6 +131,7 @@ class Routing
             $variables = [];
             //echo $this->getTextToRegex($route->getPath(), $variables)."\n";
             //A \/* azért kell, mert mappánál így a / jel is lehet a vége
+            //echo $this->getTextToRegex($route->getPath(), $variables)."\n";
             if (preg_match("/^" . $this->getTextToRegex($route->getPath(), $variables) . "\/*$/", $actualRoute->route, $preg) && $route->hasMethod($actualRoute->method)) {
                 if($actualRoute->method == "CLI" && $_SERVER["argc"]>2){
                     $variables = $_SERVER["argv"];
@@ -144,9 +146,11 @@ class Routing
                 $selected[] = $index;
             }
         }
+
         if(count($selected) == 0){
             Light::instance()->setError(404);
         }
+
         return $selected;
     }
     protected function _viewFromCode($viewPath)

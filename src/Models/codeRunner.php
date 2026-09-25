@@ -54,7 +54,8 @@ class codeRunner
             Light::instance()->setError(405);
             return null;
         }
-        $c = new $class(Light::instance());
+        $light = Light::instance();
+        $c = new $class($light);
         return $c->{$method}(...$this->_variables);
     }
 }
