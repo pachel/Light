@@ -15,9 +15,11 @@ class codeRunner
 
     public function run()
     {
-
         switch (gettype($this->_code)) {
             case "string":
+
+
+
                 return $this->runString();
             case  "object":
                 return $this->runObject();
@@ -43,6 +45,8 @@ class codeRunner
     private function runString()
     {
         if (preg_match("/^(.+?)\->(.+)$/", $this->_code, $preg)) {
+
+
             return $this->runClass($preg[1], $preg[2]);
         }
         return null;

@@ -121,11 +121,14 @@ class Route
         if (Light::$Routing->getActualRoute()->method == "CLI" && ob_get_level() > 0) {
             //ob_end_flush();
         }
+
         $codeRunner = new codeRunner($this->_code);
         if (!empty($this->_variables)) {
             $codeRunner->addVariables($this->_variables);
         }
+
         $this->_code_return = $codeRunner->run();
+
         return $this->_code_return;
     }
 

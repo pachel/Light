@@ -26,6 +26,7 @@ class Rendering
         if (empty($this->_selectedRoutes)) {
             Light::instance()->setError(404);
         }
+        //echo "Running rendering view: \n";
 
         $this->runCodes();
 
@@ -37,8 +38,14 @@ class Rendering
      */
     private function runCodes()
     {
+        //echo "RunCodes()\n";
         foreach ($this->_selectedRoutes as $index) {
+
             $this->_code_content = Light::$Routing->getRoute($index)->run();
+            //echo Light::$Routing->getRoute($index)->getPath();
+            //echo Light::$Routing->getRoute($index)->getView();
+            //print_r($this->_code_content);
+
             if(!empty($this->_code_content)){
                 //TODO: ha van visszatérés, akkor ide json kell
                 $this->printConntent($this->_code_content,Light::$Routing->getRoute($index)->getView());
@@ -46,7 +53,7 @@ class Rendering
                 return;
             }
         }
-
+        //exit();
         if(!empty($this->_code_content)){
             Light::instance()->setError(-1);
         }
@@ -55,7 +62,7 @@ class Rendering
 
     private function isDirectContent($view)
     {
-        return in_array($view, $this->_direct_types);
+        return in_array(strtoupper($view), $this->_direct_types);
     }
 
     /**
