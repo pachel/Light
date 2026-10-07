@@ -57,8 +57,15 @@ class Auth
         }
         return false;
     }
-    public function authenticate($path)
+
+    /**
+     * @param  $path
+     * @return mixed|null
+     * @throws \Exception
+     */
+    public function authenticate($path = null)
     {
+
         if(empty($this->authMethod)){
             return true;
         }

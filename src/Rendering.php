@@ -16,20 +16,17 @@ class Rendering
     public function __construct()
     {
         $this->_selectedRoutes = Light::$Routing->searchRoutes();
-
-
         if(!Light::$Auth->authenticate(Light::$Routing->getActualRoute()->route)) {
             Light::instance()->setError(403);
             return;
         }
-        //exit();
+
         if (empty($this->_selectedRoutes)) {
             Light::instance()->setError(404);
         }
-        //echo "Running rendering view: \n";
+
 
         $this->runCodes();
-
     }
 
     /**
@@ -39,13 +36,12 @@ class Rendering
     private function runCodes()
     {
         //echo "RunCodes()\n";
-        foreach ($this->_selectedRoutes as $index) {
 
+        foreach ($this->_selectedRoutes as $index) {
             $this->_code_content = Light::$Routing->getRoute($index)->run();
             //echo Light::$Routing->getRoute($index)->getPath();
             //echo Light::$Routing->getRoute($index)->getView();
             //print_r($this->_code_content);
-
             if(!empty($this->_code_content)){
                 //TODO: ha van visszatérés, akkor ide json kell
                 $this->printConntent($this->_code_content,Light::$Routing->getRoute($index)->getView());
@@ -84,7 +80,6 @@ class Rendering
             }
             $e.="1";
             $content = $this->Render(Light::$Routing->getRoute($index));
-
             $this->printConntent($content,$view);
         }
         if (empty($e)) {

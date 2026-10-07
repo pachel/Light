@@ -146,11 +146,9 @@ class Routing
                 $selected[] = $index;
             }
         }
-
         if(count($selected) == 0){
             Light::instance()->setError(404);
         }
-
         return $selected;
     }
     protected function _viewFromCode($viewPath)
